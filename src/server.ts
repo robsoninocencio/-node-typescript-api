@@ -25,7 +25,7 @@ export class SetupServer extends Server {
 
   private setupExpress(): void {
     this.app.use(bodyParser.json());
-    this.setupControllers();
+    // this.setupControllers();
   }
 
   private setupControllers(): void {
