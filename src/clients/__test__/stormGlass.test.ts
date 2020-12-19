@@ -1,16 +1,21 @@
 import { StormGlass } from '@src/clients/stormGlass';
-import * as HTTPUtil from '@src/util/request';
-import stormglassWeatherPointFixture from '@test/fixtures/stormglass_weather_3_hours.json';
 import stormglassNormalizedResponseFixture from '@test/fixtures/stormglass_normalized_response_3_hours.json';
+import * as stormglassWeatherPointFixture from '@test/fixtures/stormglass_weather_3_hours.json';
+import * as HTTPUtil from '@src/util/request';
 
 jest.mock('@src/util/request');
 
 describe('StormGlass client', () => {
+  /**
+   * Used for static method's mocks
+   */
   const MockedRequestClass = HTTPUtil.Request as jest.Mocked<
     typeof HTTPUtil.Request
   >;
+  /**
+   * Used for instance method's mocks
+   */
   const mockedRequest = new HTTPUtil.Request() as jest.Mocked<HTTPUtil.Request>;
-
   it('should return the normalized forecast from the StormGlass service', async () => {
     const lat = -33.792726;
     const lng = 151.289824;
@@ -64,13 +69,16 @@ describe('StormGlass client', () => {
     const lat = -33.792726;
     const lng = 151.289824;
 
-    MockedRequestClass.isRequestError.mockReturnValue(true);
     mockedRequest.get.mockRejectedValue({
       response: {
         status: 429,
         data: { errors: ['Rate Limit reached'] },
       },
     });
+    /**
+     * Mock static function return
+     */
+    MockedRequestClass.isRequestError.mockReturnValue(true);
 
     const stormGlass = new StormGlass(mockedRequest);
 

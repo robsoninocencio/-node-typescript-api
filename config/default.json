@@ -1,24 +1,14 @@
 {
   "App": {
-    "port": 3000,
     "database": {
       "mongoUrl": "mongodb://localhost:27017/surf-forecast"
       // docker run --name mongosurf -v /data/db:/data/db -p 27017:27017 -d mongo
     },
-    "auth": {
-      "key": "some-key",
-      "tokenExpiresIn": "20000000"
-    },
     "resources": {
       "StormGlass": {
         "apiUrl": "https://api.stormglass.io/v2",
-        "apiToken": "do-not-hard-code",
-        "cacheTtl": 3600
+        "apiToken": "do-not-hard-code"
       }
-    },
-    "logger": {
-      "enabled": true,
-      "level": "info"
     }
   }
 }

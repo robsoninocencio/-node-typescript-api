@@ -1,9 +1,10 @@
 import { InternalError } from '@src/util/errors/internal-error';
 import config, { IConfig } from 'config';
+// Another way to have similar behaviour to TS namespaces
 import * as HTTPUtil from '@src/util/request';
 
-export interface StormGlassForecastResponse {
-  hours: StormGlassPoint[];
+export interface StormGlassPointSource {
+  [key: string]: number;
 }
 
 export interface StormGlassPoint {
@@ -17,8 +18,8 @@ export interface StormGlassPoint {
   readonly windSpeed: StormGlassPointSource;
 }
 
-export interface StormGlassPointSource {
-  [key: string]: number;
+export interface StormGlassForecastResponse {
+  hours: StormGlassPoint[];
 }
 
 export interface ForecastPoint {
@@ -78,11 +79,11 @@ export class StormGlass {
   public async fetchPoints(lat: number, lng: number): Promise<ForecastPoint[]> {
     try {
       const response = await this.request.get<StormGlassForecastResponse>(
-        `${stormglassResourceConfig.get('apiUrl')}/weather/point?params=${
+        `${stormglassResourceConfig.get(
+          'apiUrl'
+        )}/weather/point?lat=${lat}&lng=${lng}&params=${
           this.stormGlassAPIParams
-        }&source=${
-          this.stormGlassAPISource
-        }&end=1592113802&lat=${lat}&lng=${lng}`,
+        }&source=${this.stormGlassAPISource}`,
         {
           headers: {
             Authorization: stormglassResourceConfig.get('apiToken'),
@@ -104,7 +105,6 @@ export class StormGlass {
       throw new ClientRequestError(err.message);
     }
   }
-
   private normalizeResponse(
     points: StormGlassForecastResponse
   ): ForecastPoint[] {
