@@ -1,5 +1,6 @@
 {
   "App": {
+    "port": 3000,
     "database": {
       "mongoUrl": "mongodb://localhost:27017/surf-forecast"
       // docker run --name mongosurf -v /data/db:/data/db -p 27017:27017 -d mongo
