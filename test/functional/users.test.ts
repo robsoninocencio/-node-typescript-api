@@ -27,7 +27,7 @@ describe('Users functional tests', () => {
 
     it('Should return 422 when there is a validation error', async () => {
       const newUser = {
-        email: 'john@mail.com',
+        email: 'janaina.inocencio@mail.com',
         password: '1234',
       };
       const response = await global.testRequest.post('/users').send(newUser);
@@ -41,8 +41,8 @@ describe('Users functional tests', () => {
 
     it('Should return 409 when the email already exists', async () => {
       const newUser = {
-        name: 'John Doe',
-        email: 'john@mail.com',
+        name: 'Yasmin Inocêncio',
+        email: 'yasmin.inocencio@mail.com',
         password: '1234',
       };
       await global.testRequest.post('/users').send(newUser);
@@ -54,9 +54,44 @@ describe('Users functional tests', () => {
         error: 'User validation failed: email: already exists in the database.',
       });
     });
+  });
 
-    // it.skip('should return 500 when there is any error other than validation error', async () => {
-    //   //TODO think in a way to throw a 500
-    // });
+  describe('when authenticating a user', () => {
+    it('should generate a token for a valid user', async () => {
+      const newUser = {
+        name: 'John Doe',
+        email: 'john@mail.com',
+        password: '1234',
+      };
+      await new User(newUser).save();
+      const response = await global.testRequest
+        .post('/users/authenticate')
+        .send({ email: newUser.email, password: newUser.password });
+      expect(response.body).toEqual(
+        expect.objectContaining({ token: expect.any(String) })
+      );
+    });
+
+    it('Should return UNAUTHORIZED if the user with the given email is not found', async () => {
+      const response = await global.testRequest
+        .post('/users/authenticate')
+        .send({ email: 'some-email@mail.com', password: '1234' });
+
+      expect(response.status).toBe(401);
+    });
+
+    it('Should return ANAUTHORIZED if the user is found but the password does not match', async () => {
+      const newUser = {
+        name: 'Maria Doe',
+        email: 'maria@mail.com',
+        password: '1234',
+      };
+      await new User(newUser).save();
+      const response = await global.testRequest
+        .post('/users/authenticate')
+        .send({ email: newUser.email, password: 'different password' });
+
+      expect(response.status).toBe(401);
+    });
   });
 });
