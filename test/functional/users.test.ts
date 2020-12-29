@@ -2,16 +2,16 @@ import { User } from '@src/models/user';
 import AuthService from '@src/services/auth';
 
 describe('Users functional tests', () => {
-  beforeAll(async () => await User.deleteMany({}));
-
+  beforeEach(async () => {
+    await User.deleteMany({});
+  });
   describe('When creating a new user', () => {
     it('should successfully create a new user with encrypted password', async () => {
       const newUser = {
-        name: 'Robson Inocêncio',
-        email: 'robson.inocencio@gmail.com',
-        password: '123',
+        name: 'John Doe',
+        email: 'john@mail.com',
+        password: '1234',
       };
-
       const response = await global.testRequest.post('/users').send(newUser);
       expect(response.status).toBe(201);
       await expect(
@@ -27,7 +27,7 @@ describe('Users functional tests', () => {
 
     it('Should return 422 when there is a validation error', async () => {
       const newUser = {
-        email: 'janaina.inocencio@mail.com',
+        email: 'john@mail.com',
         password: '1234',
       };
       const response = await global.testRequest.post('/users').send(newUser);
@@ -41,8 +41,8 @@ describe('Users functional tests', () => {
 
     it('Should return 409 when the email already exists', async () => {
       const newUser = {
-        name: 'Yasmin Inocêncio',
-        email: 'yasmin.inocencio@mail.com',
+        name: 'John Doe',
+        email: 'john@mail.com',
         password: '1234',
       };
       await global.testRequest.post('/users').send(newUser);
@@ -67,11 +67,11 @@ describe('Users functional tests', () => {
       const response = await global.testRequest
         .post('/users/authenticate')
         .send({ email: newUser.email, password: newUser.password });
+
       expect(response.body).toEqual(
         expect.objectContaining({ token: expect.any(String) })
       );
     });
-
     it('Should return UNAUTHORIZED if the user with the given email is not found', async () => {
       const response = await global.testRequest
         .post('/users/authenticate')
@@ -82,8 +82,8 @@ describe('Users functional tests', () => {
 
     it('Should return ANAUTHORIZED if the user is found but the password does not match', async () => {
       const newUser = {
-        name: 'Maria Doe',
-        email: 'maria@mail.com',
+        name: 'John Doe',
+        email: 'john@mail.com',
         password: '1234',
       };
       await new User(newUser).save();
